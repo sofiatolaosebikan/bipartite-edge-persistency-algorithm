@@ -1,17 +1,30 @@
 from hopcroftkarp import HopcroftKarp
 from tarjan import tarjan
-from time import time
 
 class CostaImproved:
-    def __init__(self, graph, left, right):
+    def __init__(self, graph):
+
         self.graph = graph
-        self.left = left
-        self.right = right
+
+        self.left = set(graph.keys())
+        self.right = set()
+
+        for value in graph.values():
+            self.right.update(value)
+        for vertex in self.left:
+            for neighbour in graph[vertex]:
+                if neighbour not in graph:
+                    graph[neighbour] = set()
+                    graph[neighbour].add(vertex)
+                else:
+                    graph[neighbour].add(vertex)
+
         hk = HopcroftKarp(graph)
         self.matching = hk.maximum_matching()
         self.E_w = set()
         self.E_0 = set()
         self.E_1 = set()
+
 
     def imperfect_labelling(self, position):
         """ Time = O(n + m)
@@ -146,13 +159,14 @@ class CostaImproved:
 
         return self.E_1, self.E_w, self.E_0
 
-g = {'a': {1, 3}, 'b': {1, 2, 4}, 'c': {1, 3}, 'd': {3, 5, 6}, 'e': {5}, 'f': {4, 7},
-         'g': {5}, 1: {'a', 'b', 'c'}, 2: {'b'}, 3: {'a', 'b', 'c'}, 4: {'b', 'f', 'e'},
-         5: {'d', 'e', 'g'}, 6: {'d'}, 7: {'f'}}
-l = {'a', 'b', 'c', 'd', 'e', 'f', 'g'}
-r = set(range(1, 8))
+# g = {'a': {1, 3}, 'b': {1, 2, 4}, 'c': {1, 3}, 'd': {3, 5, 6}, 'e': {5}, 'f': {4, 7},
+#          'g': {5}, 1: {'a', 'b', 'c'}, 2: {'b'}, 3: {'a', 'b', 'c'}, 4: {'b', 'f', 'e'},
+#          5: {'d', 'e', 'g'}, 6: {'d'}, 7: {'f'}}
+# l = {'a', 'b', 'c', 'd', 'e', 'f', 'g'}
+# r = set(range(1, 8))
 
-C = CostaImproved(g, l, r)
+g = {'S1': {'a', 'b', 'c'}, 'S2': {'a', 'b', 'c'}, 'S3': {'a', 'b', 'c'}}
+C = CostaImproved(g)
 m = HopcroftKarp(g)
 maximum_matching = m.maximum_matching()
 E1, Ew, E0 = C.edge_partitioning()
